@@ -120,17 +120,12 @@ architecture behav of top is
   -- input signal
   signal x: std_logic_vector(N - 1 downto 0);
 
-  -- shifted input signal: used to synchronize sawtooth and triangular with sine
-  signal sx: std_logic_vector(N - 1 downto 0);
-
   signal f_sine_f, f_square_f, f_triangular_f, f_sawtooth_f: 
     std_logic_vector(M - 1 downto 0);
 
   signal i: std_logic_vector(N - 1 downto 0);
 
 begin
-  sx(N - 1 downto N - 2) <= x(N - 1 downto N - 2) + "01";
-  sx(N - 3 downto 0) <= x(N - 3 downto 0);
   i(N - 1 downto P) <= (others => '0');
   i(P - 1 downto 0) <= spc;
 
@@ -138,8 +133,8 @@ begin
 
   u_f_sine: f_sine generic map(N, M) port map(x, f_sine_f);
   u_f_square: f_square generic map(N, M) port map(x, oc, f_square_f);
-  u_f_triangular: f_triangular generic map(N, M) port map(sx, f_triangular_f);
-  u_f_sawtooth: f_sawtooth generic map(N, M) port map(sx, f_sawtooth_f);
+  u_f_triangular: f_triangular generic map(N, M) port map(x, f_triangular_f);
+  u_f_sawtooth: f_sawtooth generic map(N, M) port map(x, f_sawtooth_f);
 
   with wf select
     w <= f_sine_f when "00",

@@ -35,11 +35,12 @@ architecture tb of f_square_tb is
   constant N: positive := 8;
   constant M: positive := 8;
 
-  signal s_x: std_logic_vector(N - 1 downto 0);
-  signal s_xc: std_logic_vector(N - 1 downto 0);
+  signal s_x: std_logic_vector(N - 1 downto 0) := (others => '0');
+  signal s_xc: std_logic_vector(N - 1 downto 0) := (others => '0');
   signal s_f: std_logic_vector(M - 1 downto 0);
 
   constant X_MAX: integer := 2 ** N - 1;
+  constant F_MID: integer := 2 ** (M - 1);
   constant F_MAX: integer := 2 ** M - 1;
 
 begin

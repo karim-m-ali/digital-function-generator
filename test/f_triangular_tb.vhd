@@ -48,12 +48,15 @@ architecture tb of f_triangular_tb is
   signal dut3_s_x: std_logic_vector(DUT3_N - 1 downto 0);
   signal dut3_s_f: std_logic_vector(DUT3_M - 1 downto 0);
 
+  constant DUT1_X_OVF: integer := 2 ** DUT1_N;
   constant DUT1_X_MAX: integer := 2 ** DUT1_N - 1;
   constant DUT1_F_MAX: integer := 2 ** DUT1_M - 1;
 
+  constant DUT2_X_OVF: integer := 2 ** DUT2_N;
   constant DUT2_X_MAX: integer := 2 ** DUT2_N - 1;
   constant DUT2_F_MAX: integer := 2 ** DUT2_M - 1;
 
+  constant DUT3_X_OVF: integer := 2 ** DUT3_N;
   constant DUT3_X_MAX: integer := 2 ** DUT3_N - 1;
   constant DUT3_F_MAX: integer := 2 ** DUT3_M - 1;
 
@@ -68,14 +71,9 @@ begin
     for t_x in 0 to DUT1_X_MAX loop
       dut1_s_x <= std_logic_vector(to_unsigned(t_x, DUT1_N));
       wait for 1 ns;
-      if t_x <= DUT1_X_MAX / 2 then
-        assert dut1_s_f = std_logic_vector(to_unsigned(
-          t_x / 2 ** (DUT1_N - DUT1_M - 1), DUT1_M)) severity error;
-      else
-        assert dut1_s_f = std_logic_vector(to_unsigned(
-        ((DUT1_X_MAX - t_x) / 2 ** (DUT1_N - DUT1_M - 1)) rem (DUT1_F_MAX + 1),
-        DUT1_M)) severity error;
-      end if;
+      assert dut1_s_f = std_logic_vector(to_unsigned(
+        abs(DUT1_X_MAX - 2 * ((t_x + 3 * DUT1_X_OVF / 4) rem DUT1_X_OVF))
+        / 2 ** (DUT1_N - DUT1_M), DUT1_M)) severity error;
     end loop;
     wait;
   end process;
@@ -86,14 +84,10 @@ begin
     for t_x in 0 to DUT2_X_MAX loop
       dut2_s_x <= std_logic_vector(to_unsigned(t_x, DUT2_N));
       wait for 1 ns;
-      if t_x <= DUT2_X_MAX / 2 then
-        assert dut2_s_f = std_logic_vector(to_unsigned(
-          t_x * 2 ** (DUT2_M - DUT2_N + 1), DUT2_M)) severity error;
-      else
-        assert dut2_s_f = std_logic_vector(to_unsigned(
-        ((DUT2_X_MAX - t_x) * 2 ** (DUT2_M - DUT2_N + 1)) rem (DUT2_F_MAX + 1),
-        DUT2_M)) severity error;
-      end if;
+      assert dut2_s_f = std_logic_vector(to_unsigned(
+        abs(DUT2_X_MAX - 2 * ((t_x + 3 * DUT2_X_OVF / 4) rem DUT2_X_OVF))
+        * 2 ** (DUT2_M - DUT2_N) - 2 ** (DUT2_M - DUT2_N), DUT2_M))
+        severity error;
     end loop;
     wait;
   end process;
@@ -104,14 +98,9 @@ begin
     for t_x in 0 to DUT3_X_MAX loop
       dut3_s_x <= std_logic_vector(to_unsigned(t_x, DUT3_N));
       wait for 1 ns;
-      if t_x <= DUT3_X_MAX / 2 then
-        assert dut3_s_f = std_logic_vector(to_unsigned(
-          t_x * 2 ** (DUT3_M - DUT3_N + 1), DUT3_M)) severity error;
-      else
-        assert dut3_s_f = std_logic_vector(to_unsigned(
-        ((DUT3_X_MAX - t_x) * 2 ** (DUT3_M - DUT3_N + 1)) rem (DUT3_F_MAX + 1),
-        DUT3_M)) severity error;
-      end if;
+      assert dut3_s_f = std_logic_vector(to_unsigned(
+        abs(DUT3_X_MAX - 2 * ((t_x + 3 * DUT3_X_OVF / 4) rem DUT3_X_OVF))
+        - 1, DUT3_M)) severity error;
     end loop;
     wait;
   end process;

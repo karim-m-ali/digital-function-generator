@@ -24,11 +24,13 @@ end entity f_sawtooth;
 
 architecture behav of f_sawtooth is
 begin
+  f(M - 1) <= not x(N - 1);
+
   gen_f: if M >= N generate
-    f(M - 1 downto M - N) <= x;
+    f(M - 2 downto M - N) <= x(N - 2 downto 0);
     f(M - N - 1 downto 0) <= (others => '0');
   else generate
-    f <= x(N - 1 downto N - M);
+    f(M - 2 downto 0) <= x(N - 2 downto N - M);
   end generate;
 
 end behav;

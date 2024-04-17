@@ -24,18 +24,17 @@ end entity f_triangular;
 
 architecture behav of f_triangular is
 begin
-  -- Triangular Wave:
-  -- f(x) = (2/T) * abs(x - T/2)
-  -- T: Period of the wave
+  f(M - 1) <= not x(N - 1);
+
   gen_f: if M >= N generate
-    with x(N - 1) select
-      f(M - 1 downto M - N + 1) <= x(N - 2 downto 0) when '0',
-                                   not x(N - 2 downto 0) when others;
+    with x(N - 1) xor x(N - 2) select
+      f(M - 2 downto M - N + 1) <= x(N - 3 downto 0) when '0',
+                                   not x(N - 3 downto 0) when others;
       f(M - N downto 0) <= (others => '0');
   else generate
-    with x(N - 1) select
-      f <= x(N - 2 downto N - M - 1) when '0',
-           not x(N - 2 downto N - M - 1) when others;
+    with x(N - 1) xor x(N - 2) select
+      f(M - 2 downto 0) <= x(N - 3 downto N - M - 1) when '0',
+                           not x(N - 3 downto N - M - 1) when others;
   end generate;
 
 end behav;

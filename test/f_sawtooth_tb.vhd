@@ -48,12 +48,15 @@ architecture tb of f_sawtooth_tb is
   signal dut3_s_x: std_logic_vector(DUT3_N - 1 downto 0);
   signal dut3_s_f: std_logic_vector(DUT3_M - 1 downto 0);
 
+  constant DUT1_X_OVF: integer := 2 ** DUT1_N;
   constant DUT1_X_MAX: integer := 2 ** DUT1_N - 1;
   constant DUT1_F_MAX: integer := 2 ** DUT1_M - 1;
 
+  constant DUT2_X_OVF: integer := 2 ** DUT2_N;
   constant DUT2_X_MAX: integer := 2 ** DUT2_N - 1;
   constant DUT2_F_MAX: integer := 2 ** DUT2_M - 1;
 
+  constant DUT3_X_OVF: integer := 2 ** DUT3_N;
   constant DUT3_X_MAX: integer := 2 ** DUT3_N - 1;
   constant DUT3_F_MAX: integer := 2 ** DUT3_M - 1;
 
@@ -69,7 +72,8 @@ begin
       dut1_s_x <= std_logic_vector(to_unsigned(t_x, DUT1_N));
       wait for 1 ns;
       assert dut1_s_f = std_logic_vector(to_unsigned(
-        t_x / 2 ** (DUT1_N - DUT1_M), DUT1_M)) severity error;
+        (t_x + DUT1_X_OVF / 2) rem DUT1_X_OVF / 2 ** (DUT1_N - DUT1_M), DUT1_M)) 
+        severity error;
     end loop;
     wait;
   end process;
@@ -81,7 +85,8 @@ begin
       dut2_s_x <= std_logic_vector(to_unsigned(t_x, DUT2_N));
       wait for 1 ns;
       assert dut2_s_f = std_logic_vector(to_unsigned(
-        t_x * 2 ** (DUT2_M - DUT2_N), DUT2_M)) severity error;
+        (t_x + DUT2_X_OVF / 2) rem DUT2_X_OVF * 2 ** (DUT2_M - DUT2_N), DUT2_M)) 
+        severity error;
     end loop;
     wait;
   end process;
@@ -93,7 +98,8 @@ begin
       dut3_s_x <= std_logic_vector(to_unsigned(t_x, DUT3_N));
       wait for 1 ns;
       assert dut3_s_f = std_logic_vector(to_unsigned(
-        t_x, DUT3_M)) severity error;
+        (t_x + DUT3_X_OVF / 2) rem DUT3_X_OVF, DUT3_M)) 
+        severity error;
     end loop;
     wait;
   end process;

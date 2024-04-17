@@ -9,6 +9,8 @@ It is designed with a generic architecture,
 enabling users to customize parameters such as waveform type, frequency,
 phase offset, and resolution according to their specific requirements.
 
+![GTKWave Example](gtkwave-example.jpg)
+
 ## Project Structure
 
 - [Makefile](Makefile)

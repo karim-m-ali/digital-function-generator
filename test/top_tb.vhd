@@ -49,11 +49,13 @@ architecture behav of top_tb is
   constant CYCLES_PER_TEST: positive := 5;
 
   constant SPC_MAX: integer := 2 ** P - 1;
+  constant X_OVF: integer := 2 ** N;
   constant X_MAX: integer := 2 ** N - 1;
 
   signal s_clk: std_logic := '0';
   signal s_nrst: std_logic := '0';
-  signal s_oc: std_logic_vector(N - 1 downto 0) := (others => '0');
+  signal s_oc: std_logic_vector(N - 1 downto 0) := std_logic_vector(
+    to_unsigned(X_OVF / 2, N));
   signal s_po: std_logic_vector(N - 1 downto 0) := (others => '0');
   signal s_spc: std_logic_vector(P - 1 downto 0) := (others => '0');
 
@@ -95,21 +97,24 @@ begin
 
   process
   begin
-    s_nrst <= '0';
-    s_oc <= std_logic_vector(to_unsigned(X_MAX / 2, s_oc'length));
-    s_po <= (others => '0');
-    s_spc <= (others => '0');
+    for s_po_i in 0 to 3 loop
+      s_po <= std_logic_vector(to_unsigned(s_po_i * X_OVF / 4, s_po'length));
 
-    wait until rising_edge(s_clk);
+      for t_spc in 1 to SPC_MAX loop
+        s_spc <= std_logic_vector(to_unsigned(t_spc, s_spc'length));
 
-    s_nrst <= '1';
-
-    for t_spc in 0 to SPC_MAX loop
-      s_spc <= std_logic_vector(to_unsigned(t_spc, s_spc'length));
-      for t in 1 to CYCLES_PER_TEST loop
-        for i in 0 to X_MAX loop
+        s_nrst <= '0';
+        for t in 0 to X_MAX loop
           wait until rising_edge(s_clk);
         end loop;
+        s_nrst <= '1';
+
+        for t in 1 to CYCLES_PER_TEST loop
+          for i in 0 to X_MAX loop
+            wait until rising_edge(s_clk);
+          end loop;
+        end loop;
+
       end loop;
     end loop;
 

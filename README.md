@@ -1,4 +1,4 @@
-# Generic Function Generator
+# Digital Function Generator
 
 This project implements a generic function generator in VHDL,
 designed to be compatible with various FPGAs and compile using Quartus Prime. 
